@@ -55,6 +55,8 @@
     RiotShield: 2
     RiotLaserShield: 2
     RiotBulletShield: 2
+    ClothingHeadHelmetRiot: 3
+    ClothingOuterArmorRiot: 3
     RadioHandheldSecurity: 5
     BolaEnergy: 5 # Goobstation - start
     SecHypo: 4

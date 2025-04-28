@@ -244,7 +244,8 @@
   - type: Projectile
     damage:
       types:
-        Blunt: 14
+        Piercing: 16
+        Heat: 10
   - type: PointLight
     enabled: true
     color: "#ff4300"
@@ -266,7 +267,7 @@
   - type: Projectile
     damage:
       types:
-        Piercing: 11 # 20% decrease
+        Piercing: 1 # 20% decrease
     ignoreResistances: true
 
 - type: entity
@@ -282,7 +283,7 @@
   - type: Projectile
     damage:
       types:
-        Radiation: 11
+        Radiation: 1
 
 # Energy projectiles
 - type: entity
@@ -359,7 +360,7 @@
       fly-by: *flybyfixture
   - type: Ammo
   - type: StaminaDamageOnCollide
-    damage: 33
+    damage: 40
   - type: Projectile
     impactEffect: BulletImpactEffectDisabler
     damage:
@@ -576,8 +577,8 @@
     impactEffect: BulletImpactEffectKinetic
     damage:
       types:
-        Blunt: 80 # Goobstation edit
-        # Structural: 35 # Goobstation edit
+        Blunt: 60
+        Structural: 65
   - type: Ammo
     muzzleFlash: HitscanEffect
   - type: TimedDespawn

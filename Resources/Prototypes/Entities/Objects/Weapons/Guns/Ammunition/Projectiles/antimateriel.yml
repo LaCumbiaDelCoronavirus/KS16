@@ -44,7 +44,10 @@
     armorPenetration: 0.5 # Goobstation
     damage:
       types:
-        Piercing: 75
-    penetrationThreshold: 100 # Goobstation - This count as penetration health
+        Piercing: 100
+        Structural: 226
+    penetrationThreshold: 360
+    penetrationDamageTypeRequirement:
+    - Structural
   - type: StaminaDamageOnCollide
     damage: 115 # Goob edit

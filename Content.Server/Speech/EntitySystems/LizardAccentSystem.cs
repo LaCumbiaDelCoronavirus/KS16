@@ -17,6 +17,8 @@ public sealed class LizardAccentSystem : EntitySystem
     private static readonly Regex RegexLowerEndX = new(@"\bx([\-|r|R]|\b)");
     private static readonly Regex RegexUpperEndX = new(@"\bX([\-|r|R]|\b)");
 
+    [Dependency] private readonly ReplacementAccentSystem _replacement = default!;
+
     public override void Initialize()
     {
         base.Initialize();
@@ -26,6 +28,8 @@ public sealed class LizardAccentSystem : EntitySystem
     private void OnAccent(EntityUid uid, LizardAccentComponent component, AccentGetEvent args)
     {
         var message = args.Message;
+
+        message = _replacement.ApplyReplacements(message, "lizard");
 
         // hissss
         message = RegexLowerS.Replace(message, "sss");

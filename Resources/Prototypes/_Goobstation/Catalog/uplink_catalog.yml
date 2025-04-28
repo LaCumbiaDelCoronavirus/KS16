@@ -149,7 +149,7 @@
   icon: { sprite: /Textures/_Goobstation/Objects/Weapons/Guns/Rifles/m90.rsi, state: icon }
   productEntity: WeaponRifleM90
   cost:
-    Telecrystal: 50
+    Telecrystal: 65
   categories:
   - UplinkWeaponry
 
@@ -185,7 +185,7 @@
   description: uplink-WSPR-desc
   productEntity: WeaponRifleWSPR
   cost:
-    Telecrystal: 65
+    Telecrystal: 70
   categories:
   - UplinkWeaponry
 
@@ -223,7 +223,18 @@
   icon: { sprite: /Textures/_Goobstation/Objects/Weapons/Guns/Pistols/Dualetta.rsi, state: icon }
   productEntity: BriefcaseSyndieDualettaBundleFilled
   cost:
-    Telecrystal: 50
+    Telecrystal: 60
+  categories:
+  - UplinkWeaponry
+
+- type: listing
+  id: UplinkDualettaKit
+  name: uplink-dualetta-kit-name
+  description: uplink-dualetta-kit-desc
+  icon: { sprite: /Textures/_Goobstation/Objects/Weapons/Guns/Pistols/Dualetta.rsi, state: icon }
+  productEntity: BoxDualettaKit
+  cost:
+    Telecrystal: 40
   categories:
   - UplinkWeaponry
 
@@ -233,7 +244,7 @@
   description: uplink-anaconda-desc
   productEntity: WeaponPistolAnaconda
   cost:
-    Telecrystal: 38 # This + esword = 75 TC
+    Telecrystal: 70
   categories:
   - UplinkWeaponry
 
@@ -243,7 +254,7 @@
   description: uplink-bulk-mosin-desc
   productEntity: CrateSyndicateBulkMosin
   cost:
-    Telecrystal: 25
+    Telecrystal: 35
   categories:
     - UplinkWeaponry
 
@@ -655,7 +666,7 @@
   icon: { sprite: /Textures/Objects/Weapons/Guns/Ammunition/Magazine/Shotgun/m12.rsi, state: pellets }
   productEntity: MagazineShotgun
   cost:
-    Telecrystal: 5
+    Telecrystal: 10
   categories:
   - UplinkAmmo
 
@@ -666,7 +677,7 @@
   icon: { sprite: /Textures/Objects/Weapons/Guns/Ammunition/Magazine/Shotgun/m12.rsi, state: slug }
   productEntity: MagazineShotgunSlug
   cost:
-    Telecrystal: 4 # So little total damage
+    Telecrystal: 6 # So little total damage
   categories:
   - UplinkAmmo
 
@@ -677,7 +688,7 @@
   icon: { sprite: /Textures/Objects/Weapons/Guns/Ammunition/Magazine/LightRifle/light_rifle_box.rsi, state: base }
   productEntity: MagazineLightRifleBox
   cost:
-    Telecrystal: 25 # 5 times as much total damage as C20 mag - 5 time as much cost
+    Telecrystal: 40 # 5 times as much total damage as C20 mag - 5 time as much cost
   categories:
   - UplinkAmmo
 
@@ -688,7 +699,7 @@
   icon: { sprite: _Goobstation/Objects/Weapons/Guns/Ammunition/Magazine/heavy_rifle_mags.rsi, state: base }
   productEntity: MagazineHighCaliber
   cost:
-    Telecrystal: 10 # Slightly more total damage compared to C20 mags, also they have partial AP so more expensive
+    Telecrystal: 12 # Slightly more total damage compared to C20 mags
   categories:
   - UplinkAmmo
 
@@ -699,7 +710,7 @@
   icon: { sprite: _Goobstation/Objects/Weapons/Guns/Ammunition/Magazine/heavy_rifle_mags.rsi, state: red }
   productEntity: MagazineHighCaliberExplosive
   cost:
-    Telecrystal: 20 # 2x as much compared to regular mags.
+    Telecrystal: 20 # Twice as much compared to regular mags. Idk if it's reasonable
   categories:
   - UplinkAmmo
 
@@ -722,7 +733,7 @@
   icon: { sprite: /Textures/Objects/Weapons/Guns/Ammunition/Magazine/Rifle/rifle_mag.rsi, state: red }
   productEntity: MagazineRifle
   cost:
-    Telecrystal: 6 # Slightly more expensive than C20 mag due to more total damage
+    Telecrystal: 10 # Slightly more expensive than C20 mag due to more total damage
   categories:
   - UplinkAmmo
 
@@ -733,7 +744,7 @@
   icon: { sprite: /Textures/Objects/Weapons/Guns/Ammunition/Magazine/CaselessRifle/caseless_rifle_mag.rsi, state: red }
   productEntity: MagazineCaselessRifle
   cost:
-    Telecrystal: 6
+    Telecrystal: 10
   categories:
   - UplinkAmmo
 
@@ -744,7 +755,7 @@
   icon: { sprite: /Textures/Objects/Weapons/Guns/Ammunition/Magazine/Pistol/pistol_high_capacity_mag.rsi, state: red }
   productEntity: MagazinePistolHighCapacity
   cost:
-    Telecrystal: 3
+    Telecrystal: 5
   categories:
   - UplinkAmmo
 

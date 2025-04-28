@@ -16,7 +16,7 @@
     tags:
       - HideContextMenu
   - type: AnimationPlayer
-  
+
 - type: entity
   parent: MuzzleFlashEffect
   id: MuzzleFlashEffectOmnilaser
@@ -30,7 +30,7 @@
       map: ["enum.EffectLayers.Unshaded"]
       sprite: Objects/Weapons/Guns/Projectiles/projectiles_tg.rsi
       state: omnilaser_flash
-  
+
 - type: entity
   parent: MuzzleFlashEffect
   id: MuzzleFlashEffectHeavyLaser
@@ -141,7 +141,8 @@
   - type: Projectile
     damage:
       types:
-        Blunt: 14
+        Piercing: 16
+        Heat: 10
   - type: PointLight
     enabled: true
     color: "#ff4300"
@@ -163,7 +164,7 @@
   - type: Projectile
     damage:
       types:
-        Piercing: 11 # 20% decrease
+        Piercing: 1 # 20% decrease
     ignoreResistances: true
 
 - type: entity
@@ -179,7 +180,7 @@
   - type: Projectile
     damage:
       types:
-        Radiation: 11
+        Radiation: 1
 
 # Energy projectiles
 - type: entity
@@ -256,7 +257,7 @@
       fly-by: *flybyfixture
   - type: Ammo
   - type: StaminaDamageOnCollide
-    damage: 33
+    damage: 40
   - type: Projectile
     impactEffect: BulletImpactEffectDisabler
     damage:
@@ -473,8 +474,8 @@
     impactEffect: BulletImpactEffectKinetic
     damage:
       types:
-        Blunt: 30
-        Structural: 35
+        Blunt: 60
+        Structural: 65
   - type: Ammo
     muzzleFlash: HitscanEffect
   - type: TimedDespawn

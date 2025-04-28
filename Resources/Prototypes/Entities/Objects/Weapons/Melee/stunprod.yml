@@ -37,18 +37,17 @@
     wideAnimationRotation: -135
     damage:
       types:
-        Blunt: 9
-    animation: WeaponArcThrust
+        Blunt: 7
   # it was ~35 now it's 55 so it's a buff ig
   - type: StaminaDamageOnHit # goob edited
-    damage: 15
-    overtime: 40
-    lightAttackDamageMultiplier: 4
+    damage: 80
+    overtime: 0
+    lightAttackDamageMultiplier: 1
     lightAttackOvertimeDamageMultiplier: 0
     sound: /Audio/Weapons/egloves.ogg
   - type: StaminaDamageOnCollide # goob edited
-    damage: 15
-    overtime: 40
+    damage: 35
+    overtime: 0
     sound: /Audio/Weapons/egloves.ogg
   - type: DelayedKnockdownOnHit # Goobstation
     useDelay: stunbaton
@@ -62,7 +61,7 @@
   - type: UseDelay
     delays: # Goobstation
       stunbaton:
-        length: 2.5
+        length: 0
   - type: Item
     heldPrefix: off
     size: Normal

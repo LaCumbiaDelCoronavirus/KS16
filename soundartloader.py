@@ -1,8 +1,9 @@
 from os import path, listdir
 #load music
-music_path = path.join(path.dirname(__file__), './Resources/Audio/', 'Lobby')
+script_path = path.dirname(__file__)
+music_path = path.join(script_path, './Resources/Audio/', 'Lobby')
 lobbysongs = [f for f in listdir(music_path) if path.isfile(path.join(music_path, f)) and ".ogg" in f]
-lobbymusic_cfg = open("./Resources/Prototypes/Soundcollections/lobby.yml", "w")
+lobbymusic_cfg = open(path.join(script_path,"./Resources/Prototypes/Soundcollections/lobby.yml"), "w")
 lobbymusic_cfg.write("- type: soundCollection\n  id: LobbyMusic\n  files:\n")
 for item in lobbysongs:
     lobbymusic_cfg.write(f"    - /Audio/Lobby/{item}\n")
@@ -10,18 +11,18 @@ for item in lobbysongs:
 lobbymusic_cfg.close()
 
 #load jukebox music
-jb_music_path = path.join(path.dirname(__file__), './Resources/Audio/', 'Jukebox')
+jb_music_path = path.join(script_path, './Resources/Audio/', 'Jukebox')
 jb_songs = [f for f in listdir(jb_music_path) if path.isfile(path.join(jb_music_path, f)) and ".ogg" in f]
-jb_music_cfg = open("./Resources/Prototypes/Catalog/Jukebox/Standard.yml", "w")
+jb_music_cfg = open(path.join(script_path,"./Resources/Prototypes/Catalog/Jukebox/Standard.yml"), "w")
 for item in jb_songs:
     jb_music_cfg.write(f"- type: jukebox\n  id: {item}\n  name:  {item}\n  path:\n    path: /Audio/Lobby/{item}\n\n")
 
 jb_music_cfg.close()
 
 #load lobby screens
-lobby_screen_path = path.join(path.dirname(__file__), './Resources/Textures/', 'LobbyScreens')
+lobby_screen_path = path.join(script_path, './Resources/Textures/', 'LobbyScreens')
 lobby_screens = [f for f in listdir(lobby_screen_path) if path.isfile(path.join(lobby_screen_path, f)) and (".webp" in f or ".png" in f)]
-lobby_screen_cfg = open("./Resources/Prototypes/lobbyscreens.yml", "w")
+lobby_screen_cfg = open(path.join(script_path,"./Resources/Prototypes/lobbyscreens.yml"), "w")
 for item in lobby_screens:
     lobby_screen_cfg.write(f"- type: lobbyBackground\n  id: {item}\n  background: /Textures/LobbyScreens/{item}\n\n")
 

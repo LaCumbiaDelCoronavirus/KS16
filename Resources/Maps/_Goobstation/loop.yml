@@ -80228,7 +80228,7 @@ entities:
     - type: Transform
       pos: -30.5,40.5
       parent: 2
-- proto: PosterLegitJustAWeekAway
+- proto: PosterLegitKSLeaders
   entities:
   - uid: 12093
     components:

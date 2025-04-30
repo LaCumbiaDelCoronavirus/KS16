@@ -218,6 +218,7 @@
     softness: 2
     netsync: false
 
+
 - type: entity
   id: VehicleWheelchair
   parent: [ BaseVehicle, BaseFoldable, BaseItem ]
@@ -252,6 +253,25 @@
     materialComposition:
       Steel: 125
       Plastic: 125
+  - type: Absorbent #automopping
+  - type: AbsorbentToggle
+  - type: Spillable
+    solution: absorbed
+  - type: DrawableSolution
+    solution: absorbed
+  - type: RefillableSolution
+    solution: absorbed
+  - type: DrainableSolution
+    solution: absorbed
+  - type: ExaminableSolution
+    solution: absorbed
+  - type: SolutionContainerManager
+    solutions:
+      absorbed:
+        maxVol: 750
+        reagents:
+        - ReagentId: Water
+          Quantity: 750
 
 - type: entity
   parent: VehicleWheelchair

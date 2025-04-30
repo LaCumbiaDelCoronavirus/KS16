@@ -14,3 +14,7 @@
   id: middlestation.png
   background: /Textures/LobbyScreens/middlestation.png
 
+- type: lobbyBackground
+  id: smartguy.png
+  background: /Textures/LobbyScreens/smartguy.png
+

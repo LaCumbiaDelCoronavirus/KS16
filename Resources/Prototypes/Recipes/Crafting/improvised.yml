@@ -82,7 +82,7 @@
   objectType: Item
 
 - type: construction
-  name: makeshift stunprod
+  name: makeshift armor
   id: ClothingOuterArmorMakeshift
   graph: ClothingOuterArmorMakeshift
   startNode: start

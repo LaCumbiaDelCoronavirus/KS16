@@ -84,7 +84,7 @@
 - type: construction
   name: makeshift armor
   id: ClothingOuterArmorMakeshift
-  graph: ClothingOuterArmorMakeshift
+  graph: MakeshiftArmorGraph
   startNode: start
   targetNode: armor
   category: construction-category-weapons

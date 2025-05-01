@@ -1,5 +1,5 @@
 - type: constructionGraph
-  id: ClothingOuterArmorMakeshift
+  id: MakeshiftArmorGraph
   start: start
   graph:
   - node: start
@@ -8,7 +8,6 @@
       steps:
         - material: Cable
           amount: 10
-          doAfter: 2
         - material: Plasteel
           amount: 8
           doAfter: 2

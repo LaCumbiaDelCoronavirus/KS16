@@ -1,5 +1,5 @@
 - type: constructionGraph
-  id: MakeshiftArmor
+  id: ClothingOuterArmorMakeshift
   start: start
   graph:
   - node: start

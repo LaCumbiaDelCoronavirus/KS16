@@ -81,7 +81,7 @@
   description: A handheld machine capable of playing a wide variety of tunes. Enjoyment not guaranteed.
   components:
   - type: Sprite
-    sprite: Objects/Fun/Instruments/boombox.rsi
+    sprite: Objects/Fun/boombox.rsi
     state: icon
   - type: Jukebox
     onState: on

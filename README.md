@@ -23,7 +23,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
 
-This is a fork from the primary repo for Space Station 14 called KlovnStation. To prevent people forking RobustToolbox, a "content" pack is loaded by the client and server. This content pack contains everything needed to play the game on one specific server this is the content pack for Klovnstation.
+This is a fork of Goobstation called KlovnStation. To prevent people forking RobustToolbox, a "content" pack is loaded by the client and server. This content pack contains everything needed to play the game on one specific server this is the content pack for Klovnstation.
 
 If you want to host or create content for SS14, go to the [Space Station 14 repository](https://github.com/space-wizards/space-station-14) as it contains both RobustToolbox and the content pack for development of new content packs and is the base for your fork.
 

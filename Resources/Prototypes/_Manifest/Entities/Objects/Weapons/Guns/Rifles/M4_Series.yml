@@ -78,8 +78,10 @@
       - id: MNFTWeaponRifleM4A1
         amount: 2
       - id: MNFTBaseMagazine556
-        amount: 2
+        amount: 4
       - id: MNFTBaseMagazine556AP
+        amount: 2
+      - id: MNFTBaseMagazine556HE #lel
         amount: 2
 
 # Cargo
@@ -90,6 +92,6 @@
     sprite: _Manifest/Objects/Weapons/Guns/Rifles/m4.rsi
     state: icon
   product: CrateArmoryM4A1
-  cost: 10000
+  cost: 25000
   category: cargoproduct-category-name-armory
   group: market

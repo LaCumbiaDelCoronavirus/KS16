@@ -23,17 +23,20 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 
 
-This is a fork of Goobstation called KlovnStation. To prevent people forking RobustToolbox, a "content" pack is loaded by the client and server. This content pack contains everything needed to play the game on one specific server this is the content pack for Klovnstation.
+This is a fork of Goobstation called KlovnStation. To prevent people from needlessly forking RobustToolbox, a "content" pack is loaded by the client and server.
+This content pack contains everything needed to play the game on one specific server, such as is for Klovnstation.
 
-If you want to host or create content for SS14, go to the [Space Station 14 repository](https://github.com/space-wizards/space-station-14) as it contains both RobustToolbox and the content pack for development of new content packs and is the base for your fork.
+If you want to host or create content for SS14, go to the original [Space Station 14 repository](https://github.com/space-wizards/space-station-14) as it contains both RobustToolbox and the content pack for development of new content packs, it is the base of any new fork.
 
 ## Links
 
-[KlovnStation Discord Server](https://discord.gg/WycCDNDmWD) | [KlovnStation Telegram (warning, spicy words!)](https://t.me/klovnstation)
+- [KlovnStation Discord Server](https://discord.gg/WycCDNDmWD)
+- [KlovnStation Telegram (warning, spicy words!)](https://t.me/klovnstation)
 
 ## Contributing
 
-We are happy to accept contributions from anybody. If you want to learn how to contribute, we recommend learning from another larger codebase because we do not have the expertise to properly tutor new coders yet.
+We are happy to accept contributions from anybody. 
+However, If you want to learn how to contribute, we recommend learning from another larger codebase as we have neither the expertise nor staff to properly tutor new coders yet.
 
 We are not currently accepting translations of the game on our main repository. If you would like to translate the game into another language consider creating a fork or contributing to a fork.
 

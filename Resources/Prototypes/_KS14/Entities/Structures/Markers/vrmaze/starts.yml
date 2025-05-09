@@ -32,7 +32,7 @@
   - type: MobThresholds
     thresholds:
       0: Alive
-      200: Dead
+      110: Dead
   - type: NpcFactionMember
     factions:
     - SimpleHostile
@@ -104,20 +104,27 @@
   - type: Sprite
     layers:
     - state: red
-  - type: AutoLinkTransmitter
-    channel: SZHell
   - type: DeviceNetwork
     deviceNetId: Wireless
     receiveFrequencyId: BasicDevice
   - type: WirelessNetworkConnection
     range: 1500
   - type: DeviceLinkSink
-    ports:
-      - On
-      - Off
-      - Toggle
+    range: 1500
   - type: DeviceLinkSource
-    ports:
-      - On
-      - Off
+    range: 1500
   - type: SignalPropagator
+  - type: AutoLinkTransmitter
+    channel: SZHell
+
+- type: entity
+  name: Signal Propagator
+  id: SignalPropagatorSZHellConveyor
+  parent: SignalPropagatorSZHell
+  suffix: Autolink, SZ Centcom Belts
+  components:
+  - type: SignalPropagator
+    highSourcePorts:
+    - On
+    lowSourcePorts:
+    - Off

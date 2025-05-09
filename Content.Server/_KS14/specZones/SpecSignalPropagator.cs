@@ -14,7 +14,7 @@ namespace Content.Server.KS14.SpecZones.Systems;
 public sealed partial class SignalPropagatorComponent : Component
 {
     [DataField, ViewVariables(VVAccess.ReadWrite)]
-    public bool Status = false;
+    public bool Status = true;
 
     [DataField]
     public ProtoId<SinkPortPrototype> EnablePort = "On";
@@ -26,7 +26,7 @@ public sealed partial class SignalPropagatorComponent : Component
     public ProtoId<SinkPortPrototype> TogglePort = "Toggle";
 
     [DataField]
-    public List<ProtoId<SourcePortPrototype>> HighSourcePorts = new() { "Status", "On" };
+    public List<ProtoId<SourcePortPrototype>> HighSourcePorts = new() { "On" };
 
     [DataField]
     public List<ProtoId<SourcePortPrototype>> LowSourcePorts = new() { "Off" };
@@ -38,6 +38,7 @@ public sealed partial class SignalPropagatorComponent : Component
 public sealed class SignalPropagatorSystem : EntitySystem
 {
     [Dependency] private readonly DeviceLinkSystem _deviceSignalSystem = default!;
+    private float _updateAccumulator = 0;
 
     public override void Initialize()
     {
@@ -46,6 +47,23 @@ public sealed class SignalPropagatorSystem : EntitySystem
         SubscribeLocalEvent<SignalPropagatorComponent, ComponentInit>(CompInit);
         SubscribeLocalEvent<SignalPropagatorComponent, SignalReceivedEvent>(OnSignalReceived);
     }
+
+    /*
+    public override void Update(float dt)
+    {
+        base.Update(dt);
+        _updateAccumulator += dt;
+
+        if (_updateAccumulator < 15)
+            return;
+
+        _updateAccumulator = 0;
+
+        var propagatorQuery = EntityQueryEnumerator<SignalPropagatorComponent>();
+        while (propagatorQuery.MoveNext(out var uid, out var propagatorComp))
+            UpdateOutput(new Entity<SignalPropagatorComponent>(uid, propagatorComp));
+    }
+    */
 
     private void SignalPortList(Entity<SignalPropagatorComponent, DeviceLinkSourceComponent?> ent, List<ProtoId<SourcePortPrototype>> portList, bool signal)
     {
@@ -57,10 +75,12 @@ public sealed class SignalPropagatorSystem : EntitySystem
     {
         var (entUid, propagatorComp) = ent;
 
-        var sourcePorts = propagatorComp.HighSourcePorts;
-        sourcePorts.AddRange(propagatorComp.LowSourcePorts);
+        //var sourcePorts = propagatorComp.HighSourcePorts;
+        //sourcePorts.AddRange(propagatorComp.LowSourcePorts);
 
-        _deviceSignalSystem.EnsureSourcePorts(entUid, sourcePorts.ToArray());
+        _deviceSignalSystem.EnsureSourcePorts(entUid, propagatorComp.HighSourcePorts.ToArray());
+        _deviceSignalSystem.EnsureSourcePorts(entUid, propagatorComp.LowSourcePorts.ToArray());
+
         _deviceSignalSystem.EnsureSinkPorts(entUid, propagatorComp.EnablePort, propagatorComp.DisablePort, propagatorComp.TogglePort);
 
         UpdateOutput(ent);
@@ -93,7 +113,7 @@ public sealed class SignalPropagatorSystem : EntitySystem
         }
     }
 
-    private void UpdateOutput(Entity<SignalPropagatorComponent, DeviceLinkSourceComponent?> ent)
+    public void UpdateOutput(Entity<SignalPropagatorComponent, DeviceLinkSourceComponent?> ent)
     {
         var (entUid, propagatorComp, linkSourceComp) = ent;
 
@@ -102,12 +122,12 @@ public sealed class SignalPropagatorSystem : EntitySystem
 
         if (propagatorComp.Status)
         {
-            SignalPortList(ent, propagatorComp.LowSourcePorts, false);
+            //SignalPortList(ent, propagatorComp.LowSourcePorts, false);
             SignalPortList(ent, propagatorComp.HighSourcePorts, true);
         }
         else
         {
-            SignalPortList(ent, propagatorComp.HighSourcePorts, false);
+            //SignalPortList(ent, propagatorComp.HighSourcePorts, false);
             SignalPortList(ent, propagatorComp.LowSourcePorts, true);
         }
 

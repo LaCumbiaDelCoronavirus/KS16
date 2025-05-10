@@ -3,14 +3,12 @@ using Content.Server.GameTicking.Events;
 using Content.Server.Parallax;
 using Content.Shared.Parallax.Biomes;
 using Content.Shared.KS14.SpecZones.Systems;
-using Robust.Server.GameObjects;
 using Robust.Shared.EntitySerialization;
 using Robust.Shared.EntitySerialization.Systems;
 using Robust.Shared.Prototypes;
 using Content.Shared.Damage;
 using Microsoft.CodeAnalysis;
 using Robust.Shared.Random;
-using System.Diagnostics.CodeAnalysis;
 using Content.Shared._Goobstation.Wizard.Traps;
 using Robust.Shared.Map;
 using Content.Server.Spawners.Components;
@@ -21,20 +19,18 @@ using Content.Server.Flash;
 using System.Threading.Tasks;
 using Content.Shared.Popups;
 using Content.Server.IdentityManagement;
-using Robust.Shared.Audio;
-using Robust.Shared.Player;
 using Robust.Server.Audio;
 using Content.Server.Administration.Systems;
 using Content.Server.DoAfter;
-using Content.Shared.Interaction;
 using Content.Shared.DoAfter;
 using Content.Shared.Interaction.Events;
-using Content.Server.Construction.Components;
 using Content.Shared.RCD.Components;
 using Content.Shared.Tag;
 using Content.Shared.Wires;
 using Content.Shared.Doors.Components;
 using Content.Server.Atmos.Components;
+using Content.Shared.Construction.Components;
+using Content.Shared.Access.Components;
 
 namespace Content.Server.KS14.SpecZones.Systems;
 
@@ -100,6 +96,12 @@ public sealed class SpecZoneSystem : SharedSpecZoneSystem
 
                 if (TryComp<RCDDeconstructableComponent>(entityUid, out var rcdDeconComp))
                     RemComp(entityUid, rcdDeconComp);
+
+                if (TryComp<AnchorableComponent>(entityUid, out var anchorableComp))
+                    RemComp(entityUid, anchorableComp);
+
+                if (TryComp<AccessReaderComponent>(entityUid, out var accessComponent))
+                    accessComponent.BreakOnAccessBreaker = false;
             }
 
         }

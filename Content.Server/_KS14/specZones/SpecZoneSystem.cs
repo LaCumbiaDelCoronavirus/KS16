@@ -81,7 +81,9 @@ public sealed class SpecZoneSystem : SharedSpecZoneSystem
 
         var mapZoneComponent = EnsureComp<SpecialZoneMapComponent>(mapUid);
         mapZoneComponent.ZoneId = zone.ID;
-        _activeZoneMaps.Add(zone.ID, (mapUid, mapZoneComponent));
+
+        if (!_activeZoneMaps.TryGetValue(zone.ID, out _))
+            _activeZoneMaps.Add(zone.ID, (mapUid, mapZoneComponent));
 
         // lel
         var damageableEnumerator = EntityQueryEnumerator<DamageableComponent, TransformComponent, MetaDataComponent>();

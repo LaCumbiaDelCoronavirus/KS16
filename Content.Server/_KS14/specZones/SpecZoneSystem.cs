@@ -71,7 +71,7 @@ public sealed class SpecZoneSystem : SharedSpecZoneSystem
         SubscribeLocalEvent<RoundRestartCleanupEvent>(OnRoundCleanup);
     }
 
-    private void OnRoundCleanup(ref RoundRestartCleanupEvent args)
+    private void OnRoundCleanup(RoundRestartCleanupEvent args)
     {
         _zoneExitPositions.Clear();
         _activeZoneMaps.Clear();

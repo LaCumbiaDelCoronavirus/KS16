@@ -31,6 +31,7 @@ using Content.Shared.Doors.Components;
 using Content.Server.Atmos.Components;
 using Content.Shared.Construction.Components;
 using Content.Shared.Access.Components;
+using Content.Shared.GameTicking;
 
 namespace Content.Server.KS14.SpecZones.Systems;
 
@@ -66,6 +67,14 @@ public sealed class SpecZoneSystem : SharedSpecZoneSystem
 
         SubscribeLocalEvent<SpecZoneKeyComponent, UseInHandEvent>(OnKeyUseInhand);
         SubscribeLocalEvent<SpecZoneKeyComponent, SpecZoneKeyDoAfterEvent>(OnBadDecision);
+
+        SubscribeLocalEvent<RoundRestartCleanupEvent>(OnRoundCleanup);
+    }
+
+    private void OnRoundCleanup(ref RoundRestartCleanupEvent args)
+    {
+        _zoneExitPositions.Clear();
+        _activeZoneMaps.Clear();
     }
 
     private void InitZone(SpecialZone zone)

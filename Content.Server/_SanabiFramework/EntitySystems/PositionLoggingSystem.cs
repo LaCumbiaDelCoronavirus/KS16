@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Content.Shared.SanabiFramework.PositionLogging;
 using Robust.Shared.Map;
 using Robust.Shared.Timing;
 using DependencyAttribute = Robust.Shared.IoC.DependencyAttribute;
@@ -10,12 +9,16 @@ namespace Content.Server.SanabiFramework.PositionLogging;
 
 
 /// <summary>
-/// System that handles logging the position of entities for the last <see cref="SharedPositionLoggingSystem.QueueCap"/> ticks,
+/// System that handles logging the position of entities for the last <see cref="PositionLoggingSystem.QueueCap"/> ticks,
 /// via <see cref="PositionLoggerComponent"/>.
 /// </summary>
-public sealed class PositionLoggingSystem : SharedPositionLoggingSystem
+public sealed class PositionLoggingSystem : EntitySystem
 {
     [Dependency] IGameTiming _gameTiming = default!;
+
+    /// <summary>The maximum number of positions that will be stored in a <see cref="PositionLoggingComponent.PositionQueue"/> at once.</summary>
+    public const int QueueCap = 15;
+
 
     private EntityQuery<PositionLoggerComponent> _loggerQuery;
 
@@ -64,7 +67,7 @@ public sealed class PositionLoggingSystem : SharedPositionLoggingSystem
 
         var logQueue = loggerComponent.PositionQueue;
         // If the provided tick is older than the oldest tick we have recorded, just return the oldest tick.
-        if (tickDifference >= SharedPositionLoggingSystem.QueueCap)
+        if (tickDifference >= PositionLoggingSystem.QueueCap)
             return logQueue.Peek();
 
         // tickdifference < 0 means provided tick is too new, so just use the latest one we have since I don't feel making this predict the future

@@ -1,13 +1,14 @@
+using Content.Shared.SanabiFramework.PositionLogging;
 using Robust.Shared.Map;
 using Robust.Shared.Timing;
 
-namespace Content.Server.SanabiFramework.PositionLogging;
+namespace Content.Shared.SanabiFramework.PositionLogging;
 
 
 /// <summary>
 /// Component that stores a queue of the last <see cref="PositionLoggingSystem.QueueCap"/> positions of an entity.
 /// </summary>
-[RegisterComponent, Access(typeof(PositionLoggingSystem))]
+[RegisterComponent]
 public sealed partial class PositionLoggerComponent : Component
 {
     /// <summary>
@@ -17,7 +18,7 @@ public sealed partial class PositionLoggerComponent : Component
     public Queue<EntityCoordinates> PositionQueue = new();
 
     /// <summary>
-    /// The last tick at which <see cref="PositionLoggerComponent.PositionQueue"/> was updated.
+    /// The last tick at which <see cref="PositionQueue"/> was updated.
     /// </summary>
     public uint LastRecordedTick = GameTick.Zero.Value;
 }

@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Content.Shared.SanabiFramework.PositionLogging;
 using Robust.Shared.Map;
 using Robust.Shared.Timing;
 using DependencyAttribute = Robust.Shared.IoC.DependencyAttribute;
@@ -9,14 +10,13 @@ namespace Content.Server.SanabiFramework.PositionLogging;
 
 
 /// <summary>
-/// System that handles logging the position of entities for the last <see cref="PositionLoggingSystem.QueueCap"/> ticks,
+/// System that handles logging the position of entities for the last <see cref="SharedPositionLoggingSystem.QueueCap"/> ticks,
 /// via <see cref="PositionLoggerComponent"/>.
 /// </summary>
-public sealed class PositionLoggingSystem : EntitySystem
+public sealed class PositionLoggingSystem : SharedPositionLoggingSystem
 {
-    /// <summary>The maximum number of positions that will be stored in a <see cref="PositionLoggingComponent.PositionQueue"/> at once.</summary>
+    /// <summary>The maximum number of positions that will be stored in a <see cref="PositionLoggerComponent.PositionQueue"/> at once.</summary>
     public const int QueueCap = 15;
-
 
     private static readonly FieldInfo QueueArray = typeof(Queue<>).GetField("_array", BindingFlags.NonPublic | BindingFlags.Instance)!;
     private static readonly FieldInfo QueueHead = typeof(Queue<>).GetField("_head", BindingFlags.NonPublic | BindingFlags.Instance)!;
@@ -46,7 +46,7 @@ public sealed class PositionLoggingSystem : EntitySystem
 
     /// <summary>
     /// Tries to return the coords at the tick closest to the provided <paramref name="tick"/>,
-    /// from the provided <paramref name="loggerComponent"/>'s queue.
+    /// from the provided <paramref name="loggerComponent"/>'s queue. Doesn't do anything on client.
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown when the queue of <paramref name="loggerComponent"/> is empty.</exception>
     private static EntityCoordinates GetPositionAtTick(PositionLoggerComponent loggerComponent, GameTick tick)
@@ -71,7 +71,7 @@ public sealed class PositionLoggingSystem : EntitySystem
     }
 
     /// <summary>
-    /// Tries to return the coords at the tick closest to the provided <paramref name="tick"/>,
+    /// Returns the coords at the tick closest to the provided <paramref name="tick"/>,
     /// from the provided <paramref name="loggerEnt"/>'s <see cref="PositionLoggerComponent"/>'s queue.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -81,5 +81,16 @@ public sealed class PositionLoggingSystem : EntitySystem
             return EntityCoordinates.Invalid;
 
         return GetPositionAtTick(loggerEnt.Comp, tick);
+    }
+
+    /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public override bool PredictedGetPositionAtTick(Entity<PositionLoggerComponent?> loggerEnt, GameTick tick, [NotNullWhen(true)] ref EntityCoordinates? coordinates)
+    {
+        if (!Resolve(loggerEnt, ref loggerEnt.Comp))
+            return false;
+
+        coordinates = GetPositionAtTick(loggerEnt.Comp, tick);
+        return true;
     }
 }

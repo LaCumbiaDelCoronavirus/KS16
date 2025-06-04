@@ -100,6 +100,7 @@ using Robust.Shared.Timing;
 using Robust.Shared.Utility;
 using Content.Shared.Item;
 using Content.Goobstation.Common.Weapons.Multishot;
+using Content.Shared.SanabiFramework.PositionLogging;
 
 namespace Content.Shared.Weapons.Ranged.Systems;
 
@@ -131,6 +132,7 @@ public abstract partial class SharedGunSystem : EntitySystem
     [Dependency] protected readonly ThrowingSystem ThrowingSystem = default!;
     [Dependency] private   readonly UseDelaySystem _useDelay = default!;
     [Dependency] private readonly EntityWhitelistSystem _whitelistSystem = default!;
+    [Dependency] protected readonly SharedPositionLoggingSystem PositionLoggingSystem = default!;
 
     private const float InteractNextFire = 0.3f;
     private const double SafetyNextFire = 0.5;
@@ -221,7 +223,7 @@ public abstract partial class SharedGunSystem : EntitySystem
         if (gun.Target == null || !gun.BurstActivated || !gun.LockOnTargetBurst)
             gun.Target = potentialTarget;
         // Goob edit end
-        AttemptShoot(user.Value, ent, gun);
+        AttemptShoot(user.Value, ent, gun, msg.Tick); // Sanabi Guncode edit: added TickFired
     }
 
     private void OnStopShootRequest(RequestStopShootEvent ev, EntitySessionEventArgs args)
@@ -311,35 +313,39 @@ public abstract partial class SharedGunSystem : EntitySystem
     /// <summary>
     /// Attempts to shoot at the target coordinates. Resets the shot counter after every shot.
     /// </summary>
-    public void AttemptShoot(EntityUid user, EntityUid gunUid, GunComponent gun, EntityCoordinates toCoordinates)
+     // Sanabi Guncode edit: added TickFired
+    public void AttemptShoot(EntityUid user, EntityUid gunUid, GunComponent gun, EntityCoordinates toCoordinates, GameTick? tickFired = null)
     {
         gun.ShootCoordinates = toCoordinates;
-        AttemptShoot(user, gunUid, gun);
+        AttemptShoot(user, gunUid, gun, tickFired ?? Timing.CurTick);
         gun.ShotCounter = 0;
         EntityManager.DirtyField(gunUid, gun, nameof(GunComponent.ShotCounter));
     }
 
     // Goobstation - Crawling turret fix
-    public void AttemptShoot(EntityUid user, EntityUid gunUid, GunComponent gun, EntityCoordinates toCoordinates, EntityUid target)
+     // Sanabi Guncode edit: added TickFired
+    public void AttemptShoot(EntityUid user, EntityUid gunUid, GunComponent gun, EntityCoordinates toCoordinates, EntityUid target, GameTick? tickFired = null)
     {
         gun.Target = target;
         gun.ShootCoordinates = toCoordinates;
-        AttemptShoot(user, gunUid, gun);
+        AttemptShoot(user, gunUid, gun, tickFired ?? Timing.CurTick);
         gun.ShotCounter = 0;
     }
 
     /// <summary>
     /// Shoots by assuming the gun is the user at default coordinates.
     /// </summary>
-    public void AttemptShoot(EntityUid gunUid, GunComponent gun)
+     // Sanabi Guncode edit: added TickFired
+    public void AttemptShoot(EntityUid gunUid, GunComponent gun, GameTick? tickFired = null)
     {
         var coordinates = new EntityCoordinates(gunUid, gun.DefaultDirection);
         gun.ShootCoordinates = coordinates;
-        AttemptShoot(gunUid, gunUid, gun);
+        AttemptShoot(gunUid, gunUid, gun, tickFired ?? Timing.CurTick);
         gun.ShotCounter = 0;
     }
 
-    private void AttemptShoot(EntityUid user, EntityUid gunUid, GunComponent gun)
+    // Sanabi Guncode edit: added TickFired
+    private void AttemptShoot(EntityUid user, EntityUid gunUid, GunComponent gun, GameTick tickFired)
     {
         if (gun.FireRateModified <= 0f ||
             !_actionBlockerSystem.CanAttack(user))
@@ -439,6 +445,9 @@ public abstract partial class SharedGunSystem : EntitySystem
         }
 
         var fromCoordinates = Transform(user).Coordinates;
+        var oldLoggedCoords = fromCoordinates;
+        PositionLoggingSystem.ResolvePredictedPositionAtTick((user, null), tickFired, ref fromCoordinates);
+        Log.Debug($"Firing: Old @ {oldLoggedCoords}, New @ {fromCoordinates}");
         // Remove ammo
         var ev = new TakeAmmoEvent(shots, new List<(EntityUid? Entity, IShootable Shootable)>(), fromCoordinates, user);
 

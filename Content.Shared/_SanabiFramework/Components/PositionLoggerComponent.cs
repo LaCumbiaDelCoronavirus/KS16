@@ -20,5 +20,5 @@ public sealed partial class PositionLoggerComponent : Component
     /// <summary>
     /// The last tick at which <see cref="PositionQueue"/> was updated.
     /// </summary>
-    public uint LastRecordedTick = GameTick.Zero.Value;
+    public int LastRecordedTick = (int) GameTick.Zero.Value;
 }

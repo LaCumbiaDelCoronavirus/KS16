@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using Content.Shared.SanabiFramework.PositionLogging;
 using Robust.Shared.Map;
 using Robust.Shared.Timing;
+using Serilog;
 using DependencyAttribute = Robust.Shared.IoC.DependencyAttribute;
 
 namespace Content.Server.SanabiFramework.PositionLogging;
@@ -15,15 +16,21 @@ namespace Content.Server.SanabiFramework.PositionLogging;
 /// </summary>
 public sealed class PositionLoggingSystem : SharedPositionLoggingSystem
 {
-    /// <summary>The maximum number of positions that will be stored in a <see cref="PositionLoggerComponent.PositionQueue"/> at once.</summary>
-    public const int QueueCap = 15;
+    [Dependency] private readonly IGameTiming _gameTiming = default!;
 
-    private static readonly FieldInfo QueueArray = typeof(Queue<>).GetField("_array", BindingFlags.NonPublic | BindingFlags.Instance)!;
-    private static readonly FieldInfo QueueHead = typeof(Queue<>).GetField("_head", BindingFlags.NonPublic | BindingFlags.Instance)!;
+    /// <summary>The maximum number of positions that will be stored in a <see cref="PositionLoggerComponent.PositionQueue"/> at once.</summary>
+    public const int QueueCap = 25;
+
+    private static readonly FieldInfo QueueArray = typeof(Queue<EntityCoordinates>).GetField("_array", BindingFlags.NonPublic | BindingFlags.Instance)!;
+    private static readonly FieldInfo QueueHead = typeof(Queue<EntityCoordinates>).GetField("_head", BindingFlags.NonPublic | BindingFlags.Instance)!;
+
+    private EntityQuery<PositionLoggerComponent> _loggerQuery;
 
     public override void Initialize()
     {
         base.Initialize();
+
+        _loggerQuery = GetEntityQuery<PositionLoggerComponent>();
     }
 
     public override void Update(float frameTime)
@@ -41,6 +48,7 @@ public sealed class PositionLoggingSystem : SharedPositionLoggingSystem
                 loggerQueue.Dequeue();
 
             loggerQueue.Enqueue(Transform(uid).Coordinates);
+            loggerComponent.LastRecordedTick = (int) _gameTiming.CurTick.Value;
         }
     }
 
@@ -49,14 +57,15 @@ public sealed class PositionLoggingSystem : SharedPositionLoggingSystem
     /// from the provided <paramref name="loggerComponent"/>'s queue. Doesn't do anything on client.
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown when the queue of <paramref name="loggerComponent"/> is empty.</exception>
-    private static EntityCoordinates GetPositionAtTick(PositionLoggerComponent loggerComponent, GameTick tick)
+    private EntityCoordinates GetPositionAtTick(PositionLoggerComponent loggerComponent, GameTick tick)
     {
         // TODO: Figure out if i should cast something here to int
         var tickValue = tick.Value;
-        var tickDifference = tickValue - loggerComponent.LastRecordedTick;
+        var tickDifference = (int) tickValue - loggerComponent.LastRecordedTick;
 
         var logQueue = loggerComponent.PositionQueue;
-        // If the provided tick is older than the oldest tick we have recorded, just return the oldest tick.
+        // If the provided tick is older or as old as than the oldest tick we have recorded, just return the oldest tick.
+        Log.Debug($"Working: TickDiff @ {tickDifference}, Provided Tick @ {tick}, Last Recorded @ {loggerComponent.LastRecordedTick}");
         if (tickDifference >= QueueCap)
             return logQueue.Peek();
 
@@ -85,12 +94,23 @@ public sealed class PositionLoggingSystem : SharedPositionLoggingSystem
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public override bool PredictedGetPositionAtTick(Entity<PositionLoggerComponent?> loggerEnt, GameTick tick, [NotNullWhen(true)] ref EntityCoordinates? coordinates)
+    public override bool ResolvePredictedPositionAtTick(Entity<PositionLoggerComponent?> loggerEnt, GameTick tick, [NotNullWhen(true)] ref EntityCoordinates coordinates)
     {
         if (!Resolve(loggerEnt, ref loggerEnt.Comp))
             return false;
 
         coordinates = GetPositionAtTick(loggerEnt.Comp, tick);
+        Log.Debug($"Logged resolved position @ {coordinates}");
+        return true;
+    }
+
+    /// <inheritdoc/>
+    public override bool ResolvePredictedPositionAtTick(NetEntity loggerNetUid, GameTick tick, [NotNullWhen(true)] ref EntityCoordinates coordinates)
+    {
+        if (!TryGetEntity(loggerNetUid, out var loggerUid) || !_loggerQuery.TryGetComponent(loggerUid, out var loggerComponent))
+            return false;
+
+        coordinates = GetPositionAtTick(loggerComponent, tick);
         return true;
     }
 }

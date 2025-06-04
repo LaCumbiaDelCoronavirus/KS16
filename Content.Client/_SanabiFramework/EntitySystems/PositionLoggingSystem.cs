@@ -5,7 +5,7 @@ using Robust.Shared.Timing;
 
 namespace Content.Client.SanabiFramework.PositionLogging;
 
-public abstract class PositionLoggingSystem : SharedPositionLoggingSystem
+public sealed class PositionLoggingSystem : SharedPositionLoggingSystem
 {
     public override void Initialize()
     {
@@ -13,6 +13,10 @@ public abstract class PositionLoggingSystem : SharedPositionLoggingSystem
     }
 
     /// <inheritdoc/>
-    public override bool PredictedGetPositionAtTick(Entity<PositionLoggerComponent?> loggerEnt, GameTick tick, [NotNullWhen(true)] ref EntityCoordinates? coordinates)
+    public override bool ResolvePredictedPositionAtTick(Entity<PositionLoggerComponent?> loggerEnt, GameTick tick, [NotNullWhen(true)] ref EntityCoordinates coordinates)
+        => false;
+
+    /// <inheritdoc/>
+    public override bool ResolvePredictedPositionAtTick(NetEntity loggerNetUid, GameTick tick, [NotNullWhen(true)] ref EntityCoordinates coordinates)
         => false;
 }

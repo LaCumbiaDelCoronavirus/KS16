@@ -19,7 +19,7 @@ public sealed class PositionLoggingSystem : SharedPositionLoggingSystem
     [Dependency] private readonly IGameTiming _gameTiming = default!;
 
     /// <summary>The maximum number of positions that will be stored in a <see cref="PositionLoggerComponent.PositionQueue"/> at once.</summary>
-    public const int QueueCap = 25;
+    public const int QueueCap = 40;
 
     private static readonly FieldInfo QueueArray = typeof(Queue<EntityCoordinates>).GetField("_array", BindingFlags.NonPublic | BindingFlags.Instance)!;
     private static readonly FieldInfo QueueHead = typeof(Queue<EntityCoordinates>).GetField("_head", BindingFlags.NonPublic | BindingFlags.Instance)!;

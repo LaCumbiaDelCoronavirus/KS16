@@ -32,6 +32,7 @@ public sealed class PositionLoggingSystem : SharedPositionLoggingSystem
     {
         base.Update(frameTime);
 
+        // We don't check for where the entity has a transform comp because fukyou.
         var loggerEnum = EntityQueryEnumerator<PositionLoggerComponent>();
         while (loggerEnum.MoveNext(out var uid, out var loggerComponent))
         {
@@ -90,11 +91,11 @@ public sealed class PositionLoggingSystem : SharedPositionLoggingSystem
     /// from the provided <paramref name="uid"/>'s <see cref="PositionLoggerComponent"/>'s queue.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool GetPositionAtTick(EntityUid uid, GameTick tick, [NotNullWhen(true)] out EntityCoordinates? coordinates)
+    public bool GetPositionAtTick(EntityUid uid, GameTick tick, out EntityCoordinates coordinates)
     {
         if (!_loggerQuery.TryGetComponent(uid, out var loggerComponent))
         {
-            coordinates = null;
+            coordinates = EntityCoordinates.Invalid;
             return false;
         }
 

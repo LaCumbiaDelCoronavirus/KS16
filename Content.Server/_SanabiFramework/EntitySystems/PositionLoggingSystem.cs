@@ -14,13 +14,9 @@ namespace Content.Server.SanabiFramework.PositionLogging;
 /// </summary>
 public sealed class PositionLoggingSystem : EntitySystem
 {
-    [Dependency] IGameTiming _gameTiming = default!;
-
     /// <summary>The maximum number of positions that will be stored in a <see cref="PositionLoggingComponent.PositionQueue"/> at once.</summary>
     public const int QueueCap = 15;
 
-
-    private EntityQuery<PositionLoggerComponent> _loggerQuery;
 
     private static readonly FieldInfo QueueArray = typeof(Queue<>).GetField("_array", BindingFlags.NonPublic | BindingFlags.Instance)!;
     private static readonly FieldInfo QueueHead = typeof(Queue<>).GetField("_head", BindingFlags.NonPublic | BindingFlags.Instance)!;
@@ -28,7 +24,6 @@ public sealed class PositionLoggingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        _loggerQuery = GetEntityQuery<PositionLoggerComponent>();
     }
 
     public override void Update(float frameTime)
@@ -41,7 +36,7 @@ public sealed class PositionLoggingSystem : EntitySystem
         {
             var loggerQueue = loggerComponent.PositionQueue;
 
-            // It should always be below QueueCap.
+            // It should always be below QueueCap, rather than making it 16 and then trimming excess
             if (loggerQueue.Count + 1 >= QueueCap)
                 loggerQueue.Dequeue();
 
@@ -49,17 +44,12 @@ public sealed class PositionLoggingSystem : EntitySystem
         }
     }
 
-    /// <exception cref="KeyNotFoundException">Thrown when <paramref name="uid"/> has no <see cref="PositionLoggerComponent"/> component, or the
-    /// entity does not exist.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Queue<EntityCoordinates> GetQueue(EntityUid uid) => _loggerQuery.GetComponent(uid).PositionQueue;
-
     /// <summary>
     /// Tries to return the coords at the tick closest to the provided <paramref name="tick"/>,
     /// from the provided <paramref name="loggerComponent"/>'s queue.
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown when the queue of <paramref name="loggerComponent"/> is empty.</exception>
-    public static EntityCoordinates GetPositionAtTick(PositionLoggerComponent loggerComponent, GameTick tick)
+    private static EntityCoordinates GetPositionAtTick(PositionLoggerComponent loggerComponent, GameTick tick)
     {
         // TODO: Figure out if i should cast something here to int
         var tickValue = tick.Value;
@@ -67,7 +57,7 @@ public sealed class PositionLoggingSystem : EntitySystem
 
         var logQueue = loggerComponent.PositionQueue;
         // If the provided tick is older than the oldest tick we have recorded, just return the oldest tick.
-        if (tickDifference >= PositionLoggingSystem.QueueCap)
+        if (tickDifference >= QueueCap)
             return logQueue.Peek();
 
         // tickdifference < 0 means provided tick is too new, so just use the latest one we have since I don't feel making this predict the future
@@ -82,27 +72,14 @@ public sealed class PositionLoggingSystem : EntitySystem
 
     /// <summary>
     /// Tries to return the coords at the tick closest to the provided <paramref name="tick"/>,
-    /// from the provided <paramref name="uid"/>'s <see cref="PositionLoggerComponent"/>'s queue.
-    /// </summary>
-    /// <exception cref="KeyNotFoundException">Thrown when <paramref name="uid"/> has no <see cref="PositionLoggerComponent"/> component, or the
-    /// entity does not exist.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public EntityCoordinates GetPositionAtTick(EntityUid uid, GameTick tick) => GetPositionAtTick(_loggerQuery.GetComponent(uid), tick);
-
-    /// <summary>
-    /// Tries to return the coords at the tick closest to the provided <paramref name="tick"/>,
-    /// from the provided <paramref name="uid"/>'s <see cref="PositionLoggerComponent"/>'s queue.
+    /// from the provided <paramref name="loggerEnt"/>'s <see cref="PositionLoggerComponent"/>'s queue.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool GetPositionAtTick(EntityUid uid, GameTick tick, out EntityCoordinates coordinates)
+    public EntityCoordinates GetPositionAtTick(Entity<PositionLoggerComponent?> loggerEnt, GameTick tick)
     {
-        if (!_loggerQuery.TryGetComponent(uid, out var loggerComponent))
-        {
-            coordinates = EntityCoordinates.Invalid;
-            return false;
-        }
+        if (!Resolve(loggerEnt, ref loggerEnt.Comp))
+            return EntityCoordinates.Invalid;
 
-        coordinates = GetPositionAtTick(loggerComponent, tick);
-        return true;
+        return GetPositionAtTick(loggerEnt.Comp, tick);
     }
 }

@@ -1,12 +1,3 @@
-- type: specialZone
-  id: hell
-  biome: Grasslands
-  mapPath: /Maps/_KS14/hell.yml
-
-
-
-
-
 - type: entity
   parent: BaseItem
   id: BaseZoneKey

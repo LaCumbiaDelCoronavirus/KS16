@@ -1,0 +1,53 @@
+- type: specialZone
+  id: hell
+  biome: null
+  mapPath: /Maps/_KS14/hell.yml
+
+- type: entity
+  id: FloorDigitalChasmEntity
+  name: void
+  description: It's a blinding darkness. You can't see anything in it, and no jaunter will ever save you from it.
+  placement:
+    mode: SnapgridCenter
+    snap:
+    - Wall
+  components:
+  - type: SpeczoneChasm
+  - type: StepTrigger
+    requiredTriggeredSpeed: 0
+    intersectRatio: 0.4
+    blacklist:
+      tags:
+      - Catwalk
+    triggerGroups: # Goobstation
+      types:
+      - Chasm
+  - type: Transform
+    anchored: true
+  - type: Clickable
+  - type: Sprite
+    sprite: Tiles/Planet/Chasms/basalt_chasm.rsi
+    drawdepth: BelowFloor
+    layers:
+    - state: chasm
+      shader: CameraStatic
+  - type: Icon
+    sprite: Tiles/Planet/Chasms/basalt_chasm.rsi
+    state: full
+  - type: Physics
+    bodyType: Static
+  - type: Fixtures
+    fixtures:
+      fix1:
+        shape:
+          !type:PhysShapeAabb
+          bounds: "-0.5,-0.5,0.5,0.5"
+        layer:
+        - WallLayer
+        mask:
+        - ItemMask
+        density: 1000
+        hard: false
+  - type: Tag
+    tags:
+    - HideContextMenu

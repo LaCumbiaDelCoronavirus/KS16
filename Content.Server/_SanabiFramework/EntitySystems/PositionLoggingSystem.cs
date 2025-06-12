@@ -59,7 +59,6 @@ public sealed class PositionLoggingSystem : SharedPositionLoggingSystem
     /// <exception cref="InvalidOperationException">Thrown when the queue of <paramref name="loggerComponent"/> is empty.</exception>
     private EntityCoordinates GetPositionAtTick(PositionLoggerComponent loggerComponent, GameTick tick)
     {
-        // TODO: Figure out if i should cast something here to int
         var tickValue = tick.Value;
         var tickDifference = (int) tickValue - loggerComponent.LastRecordedTick;
 
@@ -86,7 +85,7 @@ public sealed class PositionLoggingSystem : SharedPositionLoggingSystem
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public EntityCoordinates GetPositionAtTick(Entity<PositionLoggerComponent?> loggerEnt, GameTick tick)
     {
-        if (!Resolve(loggerEnt, ref loggerEnt.Comp))
+        if (!Resolve(loggerEnt, ref loggerEnt.Comp, logMissing: false))
             return EntityCoordinates.Invalid;
 
         return GetPositionAtTick(loggerEnt.Comp, tick);
@@ -96,7 +95,7 @@ public sealed class PositionLoggingSystem : SharedPositionLoggingSystem
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override bool ResolvePredictedPositionAtTick(Entity<PositionLoggerComponent?> loggerEnt, GameTick tick, [NotNullWhen(true)] ref EntityCoordinates coordinates)
     {
-        if (!Resolve(loggerEnt, ref loggerEnt.Comp))
+        if (!Resolve(loggerEnt, ref loggerEnt.Comp, logMissing: false))
             return false;
 
         coordinates = GetPositionAtTick(loggerEnt.Comp, tick);

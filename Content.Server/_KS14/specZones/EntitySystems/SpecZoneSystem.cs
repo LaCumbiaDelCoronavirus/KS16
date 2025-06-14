@@ -21,8 +21,6 @@ using Content.Shared.Popups;
 using Content.Server.IdentityManagement;
 using Robust.Server.Audio;
 using Content.Server.Administration.Systems;
-using Content.Server.DoAfter;
-using Content.Shared.DoAfter;
 using Content.Shared.Interaction.Events;
 using Content.Shared.RCD.Components;
 using Content.Shared.Tag;
@@ -36,16 +34,15 @@ using Robust.Shared.Configuration;
 using Content.Shared.CCVar;
 using System.Runtime.CompilerServices;
 using DependencyAttribute = Robust.Shared.IoC.DependencyAttribute;
-using Content.Shared.Maps;
+using Content.Shared.Mind.Components;
 
 namespace Content.Server.KS14.SpecZones;
 
-public sealed class SpecZoneSystem : SharedSpecZoneSystem
+public sealed partial class SpecZoneSystem : SharedSpecZoneSystem
 {
     [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
     [Dependency] private readonly IConfigurationManager _configManager = default!;
     [Dependency] private readonly IRobustRandom _random = default!;
-    [Dependency] private readonly TurfSystem _turfSystem = default!;
     [Dependency] private readonly MapLoaderSystem _mapLoaderSystem = default!;
     [Dependency] private readonly BiomeSystem _biomes = default!;
     [Dependency] private readonly SharedMapSystem _mapSystem = default!;
@@ -57,7 +54,6 @@ public sealed class SpecZoneSystem : SharedSpecZoneSystem
     [Dependency] private readonly IdentitySystem _identity = default!;
     [Dependency] private readonly AudioSystem _audio = default!;
     [Dependency] private readonly RejuvenateSystem _rejuvenateSystem = default!;
-    [Dependency] private readonly DoAfterSystem _doAfter = default!;
     [Dependency] private readonly TagSystem _tagSystem = default!;
 
     // Why the fuck would you even turn this off
@@ -70,6 +66,7 @@ public sealed class SpecZoneSystem : SharedSpecZoneSystem
 
     private EntityQuery<MetaDataComponent> _metaDataQuery;
     private EntityQuery<SpecialZoneMapComponent> _specZoneQuery;
+    private EntityQuery<MindContainerComponent> _mindContainerQuery;
 
 
     public override void Initialize()
@@ -78,8 +75,10 @@ public sealed class SpecZoneSystem : SharedSpecZoneSystem
 
         _metaDataQuery = GetEntityQuery<MetaDataComponent>();
         _specZoneQuery = GetEntityQuery<SpecialZoneMapComponent>();
+        _mindContainerQuery = GetEntityQuery<MindContainerComponent>();
 
         SubscribeLocalEvent<RoundStartingEvent>(OnRoundStarting);
+
         SubscribeLocalEvent<EndSpecialZoneOnTriggerComponent, TriggerEvent>(OnEndZoneTrigger);
 
         SubscribeLocalEvent<SpecZoneKeyComponent, UseInHandEvent>(OnKeyUseInhand);
@@ -117,6 +116,9 @@ public sealed class SpecZoneSystem : SharedSpecZoneSystem
 
         return zones;
     }
+
+    public bool IsMapAZone(EntityUid mapUid)
+        => GetZoneMapList().Any(zone => zone.Owner == mapUid);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public List<Entity<SpecialZoneMapComponent>> GetZoneMapList(out int count)
@@ -185,7 +187,7 @@ public sealed class SpecZoneSystem : SharedSpecZoneSystem
     /// Doesn't do do anything when <see cref="CCVars.SpeczonesStartPaused"/> is off.
     /// Should be called when the zone starts being in use/stops being in use.
     /// </summary>
-    /// <returns>Whether the zone was set as according to <paramref name="status"/>. Returns false if it was already awake.</returns>
+    /// <returns>Whether the zone was set as according to <paramref name="status"/>. Returns false if no change was made.</returns>
     public bool TrySetZoneAwake(Entity<SpecialZoneMapComponent> zone, bool status)
     {
         if (!_specZonesStartPaused)
@@ -318,7 +320,7 @@ public sealed class SpecZoneSystem : SharedSpecZoneSystem
         return _random.Pick(possibleEntrancePositions);
     }
 
-    public bool EjectFromZone(EntityUid ejecteeUid)
+    public bool EjectFromZone(EntityUid ejecteeUid, Entity<SpecialZoneMapComponent> zone)
     {
         if (_zoneExitPositions.Count == 0)
             return false;
@@ -331,51 +333,53 @@ public sealed class SpecZoneSystem : SharedSpecZoneSystem
         try
         {
             _stunSystem.TryParalyze(ejecteeUid, ZoneExitEffectDuration, false);
-            _popupSystem.PopupCoordinates($"{_identity.GetEntityIdentity(ejecteeUid)} gets twisted back into this realm!", exitPosition, PopupType.MediumCaution);
+            _popupSystem.PopupCoordinates(Loc.GetString("speczone-ejected-popup", ("user", _identity.GetEntityIdentity(ejecteeUid))), exitPosition, PopupType.MediumCaution);
 
             // dosparks might randomly die so,,, this is in trycatch
             _sparks.DoSparks(exitPosition);
         }
-        catch (Exception ejectEx) { Log.Error($"Exception thrown when trying to eject entity from zone! Uid: {ejecteeUid}, Exception: {ejectEx.Message}, Stack: {ejectEx.StackTrace}"); }
+        catch (Exception ejectEx) { Log.Error($"Exception thrown after trying to eject entity from zone! Uid: {ejecteeUid}, Exception: {ejectEx.Message}, Stack: {ejectEx.StackTrace}"); }
 
         return true;
     }
 
-    public void InsertIntoZone(EntityUid entityUid, EntityCoordinates position)
+    public void InsertIntoZone(EntityUid entityUid, Entity<SpecialZoneMapComponent> zone, EntityCoordinates position)
     {
-        // fuck them up a bit #2
         _transform.SetCoordinates(entityUid, position);
-        _sparks.DoSparks(position);
 
-        _rejuvenateSystem.PerformRejuvenate(entityUid);
-        _stunSystem.TryParalyze(entityUid, ZoneExitEffectDuration, false);
+        try
+        {
+
+            _rejuvenateSystem.PerformRejuvenate(entityUid);
+            _stunSystem.TryParalyze(entityUid, ZoneExitEffectDuration, false);
+
+            // this might also randomly die but no need
+            _sparks.DoSparks(position);
+        }
+        catch (Exception ejectEx) { Log.Error($"Exception thrown after trying to insert entity into zone! Uid: {entityUid}, Exception: {ejectEx.Message}, Stack: {ejectEx.StackTrace}"); }
     }
 
 #pragma warning disable RA0030
     public void EndZone(Entity<SpecialZoneMapComponent> zone, bool shouldSleepZone = true)
     {
         var zoneMapUid = zone.Owner;
-        var allLivingMinds = _mindSystem.GetAliveHumans();
+        var allMindContainers = EntityQueryEnumerator<MindContainerComponent>();
 
         FindExitPositions();
-        Parallel.ForEach(allLivingMinds, mindEntity =>
+        while (allMindContainers.MoveNext(out var uid, out _))
         {
-            var humanUid = mindEntity.Comp.OwnedEntity;
-            if (humanUid == null)
-                return;
+            // It's probably not a problem, probably. It's well within acceptable bounds though.
+            var containerTransform = Transform(uid);
 
-            if (!TryComp<TransformComponent>(humanUid, out var humanTransform))
-                return;
-
-            var humanMapUid = _transform.GetMap(humanTransform.Coordinates);
+            var humanMapUid = _transform.GetMap(containerTransform.Coordinates);
             if (humanMapUid == null || humanMapUid != zoneMapUid)
                 return;
 
-            EjectFromZone(humanUid.Value);
+            EjectFromZone(uid, zone);
 
-            if (_mindSystem.TryGetSession(humanUid, out var mind))
+            if (_mindSystem.TryGetSession(uid, out var mind))
                 _audio.PlayGlobal(ZoneFinishSoundSpec, mind);
-        });
+        }
 
         if (shouldSleepZone)
             TrySetZoneAwake(zone, false);
@@ -394,73 +398,6 @@ public sealed class SpecZoneSystem : SharedSpecZoneSystem
 
         zonePrototypes.ForEach(zonePrototype => zoneUids.Add(InitZonePrototype(zonePrototype)));
         SetupZoneMaps(zoneUids);
-    }
-
-    private void OnEndZoneTrigger(Entity<EndSpecialZoneOnTriggerComponent> triggerEnt, ref TriggerEvent triggerEv)
-    {
-        var zoneMapDictionary = GetZoneMapDictionary();
-        var triggerEndingZoneId = triggerEnt.Comp.ZoneId;
-
-        if (triggerEndingZoneId != null)
-        {
-            if (!zoneMapDictionary.TryGetValue(triggerEndingZoneId, out var activeZone))
-                return;
-
-            EndZone(activeZone);
-
-            return;
-        }
-
-        var triggerEntMapUid = _transform.GetMap(triggerEnt.Owner);
-        if (triggerEntMapUid != null && _specZoneQuery.TryGetComponent(triggerEntMapUid, out var triggerEntMapSpecZoneComponent))
-            EndZone((triggerEntMapUid.Value, triggerEntMapSpecZoneComponent));
-    }
-
-    private void OnKeyUseInhand(Entity<SpecZoneKeyComponent> key, ref UseInHandEvent args)
-    {
-        var user = args.User;
-        var keyDoAfter = new DoAfterArgs(EntityManager, user, TimeSpan.FromSeconds(5), new SpecZoneKeyDoAfterEvent(), key.Owner)
-        {
-            DistanceThreshold = 1f,
-            NeedHand = true,
-            BreakOnDamage = true,
-            BreakOnMove = true,
-        };
-
-        if (_doAfter.TryStartDoAfter(keyDoAfter))
-            _popupSystem.PopupEntity($"{_identity.GetEntityIdentity(user)} raises the key into the air...", user, PopupType.Medium);
-
-        FindExitPositions();
-    }
-
-    private void OnBadDecision(Entity<SpecZoneKeyComponent> key, ref SpecZoneKeyDoAfterEvent args)
-    {
-        if (args.Cancelled)
-            return;
-
-        var user = args.User;
-        var targetZoneId = key.Comp.ZoneId ?? GetRandomZoneId();
-
-        if (!GetZoneMapDictionary().TryGetValue(targetZoneId, out var targetZone))
-            return;
-
-        TrySetZoneAwake(targetZone, true);
-
-        var zoneEntrancePosition = GetRandomZoneEntrance(targetZoneId);
-        if (zoneEntrancePosition == null)
-            return;
-
-        _transform.TryGetMapOrGridCoordinates(user, out var useCoordinates);
-
-        // you're fucked now
-        InsertIntoZone(user, zoneEntrancePosition.Value);
-        EjectFromZone(key.Owner);
-
-        if (_mindSystem.TryGetMind(user, out var mindId, out var mindComponent) && _mindSystem.TryGetSession(mindId, out var mind))
-            _audio.PlayGlobal(ZoneEnterSoundSpec, mind);
-
-        if (useCoordinates != null)
-            _popupSystem.PopupCoordinates($"{_identity.GetEntityIdentity(user)} disappears in a flash of light!", useCoordinates.Value, PopupType.LargeCaution);
     }
 }
 

@@ -16,7 +16,6 @@ public sealed class SignalPropagatorSystem : EntitySystem
     [Dependency] private readonly DeviceLinkSystem _deviceSignalSystem = default!;
     [Dependency] private readonly AutoLinkSystem _autoLinkSystem = default!;
 
-    // This is a bit stupid.
     private int _unaccumulatedPropagators = 0;
 
     // How many seconds from compinit does this
@@ -119,7 +118,7 @@ public sealed class SignalPropagatorSystem : EntitySystem
 
     public void UpdateOutput(Entity<SignalPropagatorComponent, DeviceLinkSourceComponent?> ent)
     {
-        var (entUid, propagatorComp, linkSourceComp) = ent;
+        var (_, propagatorComp, _) = ent;
 
         if (!Resolve(ent, ref ent.Comp2))
             return;

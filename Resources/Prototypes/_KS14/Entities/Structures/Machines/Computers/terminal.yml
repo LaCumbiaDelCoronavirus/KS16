@@ -2,6 +2,7 @@
   parent: BaseComputer
   id: LuaTerminalComputer
   name: odd terminal
+  desc: A terminal is open on it. A label on the side reads something...
   components:
   - type: Sprite
     layers:
@@ -27,7 +28,7 @@
       - TerminalIn
   - type: Computer
     board: LuaTerminalComputerCircuitBoard
-  - type: LuaTerminal
+  - type: Terminal
 
 - type: entity
   parent: BaseComputerCircuitboard
@@ -37,5 +38,5 @@
   components:
     - type: Sprite
       state: cpu_medical
-    #- type: ComputerBoard
-    #  prototype: ComputerCloningConsole
+    - type: ComputerBoard
+      prototype: ComputerLuaTerminal

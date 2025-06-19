@@ -47,6 +47,7 @@ public abstract class SharedTerminalSystem : EntitySystem
         args.Verbs.Add(runVerb);
     }
 
+    /// <summary>Starts a new program, or creates a new one if one already exists on this terminal.</summary>
     public virtual void InitProgram(Entity<TerminalComponent> terminal) { }
 
     /// <summary>Opens a file dialog for uploading and running a lua file on this terminal.</summary>

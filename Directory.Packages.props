@@ -19,5 +19,8 @@
     <PackageVersion Include="OpenTK" Version="4.7.2" />
     <PackageVersion Include="Veldrid" Version="4.8.0" />
     <PackageVersion Include="Veldrid.SPIRV" Version="1.0.15" />
+
+    <!-- KS14: Add MoonSharp, for terminal -->
+    <PackageVersion Include="MoonSharp" Version="2.0.0.0" />
   </ItemGroup>
 </Project>

@@ -50,6 +50,9 @@ SPDX-License-Identifier: AGPL-3.0-or-later
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" PrivateAssets="All" />
+
+    <!-- KS14: Added MoonSharp. MoonSharp is a library for running Lua programs via C#. -->
+    <PackageReference Include="MoonSharp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Content.Packaging\Content.Packaging.csproj" />

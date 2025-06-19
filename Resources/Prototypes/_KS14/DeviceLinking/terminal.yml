@@ -1,0 +1,9 @@
+- type: sinkPort
+  id: TerminalIn
+  name: signal-port-name-luaterminal-in
+  description: signal-port-description-luaterminal-in
+
+- type: sourcePort
+  id: TerminalOut
+  name: signal-port-name-luaterminal-out
+  description: signal-port-description-luaterminal-out

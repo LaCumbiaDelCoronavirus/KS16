@@ -1,0 +1,41 @@
+- type: entity
+  parent: BaseComputer
+  id: LuaTerminalComputer
+  name: odd terminal
+  components:
+  - type: Sprite
+    layers:
+    - map: ["computerLayerBody"]
+      state: computer
+    - map: ["computerLayerKeyboard"]
+      state: generic_keyboard
+    - map: ["computerLayerScreen"]
+      state: comm_syndie
+    - map: ["computerLayerKeys"]
+      state: syndie_key
+    - map: [ "enum.WiresVisualLayers.MaintenancePanel" ]
+      state: generic_panel_open
+  - type: PointLight
+    radius: 1.5
+    energy: 1.6
+    color: "#f71713"
+  - type: DeviceLinkSource
+    ports:
+      - TerminalOut
+  - type: DeviceLinkSink
+    ports:
+      - TerminalIn
+  - type: Computer
+    board: LuaTerminalComputerCircuitBoard
+  - type: LuaTerminal
+
+- type: entity
+  parent: BaseComputerCircuitboard
+  id: LuaTerminalComputerCircuitBoard
+  name: terminal computer board
+  description: A computer printed circuit board for a lua console.
+  components:
+    - type: Sprite
+      state: cpu_medical
+    #- type: ComputerBoard
+    #  prototype: ComputerCloningConsole

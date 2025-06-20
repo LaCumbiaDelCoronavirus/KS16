@@ -60,6 +60,12 @@
 ## Non-circuit imprinter (no second category)
 
 # Autolathe
+- type: latheRecipe # KS14 -- Re-implemented cellrecharger
+  parent: [ BaseCheapElectronicsRecipe, BaseMachineRecipeCategory ]
+  id: CellRechargerCircuitboard
+  icon: { sprite: Structures/Power/cell_recharger.rsi, state: empty } # Goobstation
+  result: CellRechargerCircuitboard
+
 - type: latheRecipe
   parent: [ BaseCheapElectronicsRecipe, BaseMachineRecipeCategory ]
   id: WeaponCapacitorRechargerCircuitboard
@@ -530,3 +536,5 @@
   id: HolopadMachineCircuitboard
   icon: { sprite:  Structures/Machines/holopad.rsi, state: base } # Goobstation
   result: HolopadMachineCircuitboard
+
+# KS14 -- Moved UpgradedFreezer, AdvancedFreezer, Electrolyzer, Bluespace Gas Sender (TBA), Crystallizer boards to separate `_KS14` directory

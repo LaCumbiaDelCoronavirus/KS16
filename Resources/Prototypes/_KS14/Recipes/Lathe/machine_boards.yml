@@ -1,3 +1,6 @@
+# KS14 Note -- Moved UpgradedFreezer, AdvancedFreezer, Electrolyzer, Bluespace Gas Sender (TBA), Crystallizer boards to separate this `_KS14` directory
+
+
 - type: latheRecipe
   parent: BaseGoldCircuitboardRecipe
   id: ThermomachineUpgradedFreezerMachineCircuitBoard

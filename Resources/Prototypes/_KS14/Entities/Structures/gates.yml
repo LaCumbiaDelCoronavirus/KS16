@@ -1,0 +1,44 @@
+- type: entity
+  parent: BaseLogicItem
+  id: LogicGateLua
+  name: logic gate
+  description: A logic gate with- ..what the fuck is this?
+  suffix: Lua
+  components:
+  - type: Sprite
+    layers:
+    - state: base
+    - state: logic
+    - state: logic_a
+      map: [ "enum.LogicGateLayers.InputA" ]
+      visible: false
+    - state: logic_b
+      map: [ "enum.LogicGateLayers.InputB" ]
+      visible: false
+    - state: lua
+      sprite: _KS14/Objects/Devices/gates.rsi
+    - state: light_base
+      sprite: _KS14/Objects/Devices/gates.rsi
+    - state: redblinking_unlit
+      visible: false
+      sprite: _KS14/Objects/Devices/gates.rsi
+      shader: unshaded
+      map: [ "light" ]
+  - type: GenericVisualizer
+    visuals:
+      enum.TerminalVisuals.Light:
+        unlit:
+          Working: { state: green_unlit, visible: true }
+          Yielding: { state: yellow_unlit, visible: true }
+          Stopped: { state: redblinking_unlit, visible: true }
+          Off: { visible: false }
+      enum.LogicGateVisuals.InputA:
+        enum.LogicGateLayers.InputA:
+          True: { visible: true }
+          False: { visible: false }
+      enum.LogicGateVisuals.InputB:
+        enum.LogicGateLayers.InputB:
+          True: { visible: true }
+          False: { visible: false }
+  - type: Terminal
+  - type: TerminalProgram

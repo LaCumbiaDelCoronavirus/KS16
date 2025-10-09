@@ -21,9 +21,8 @@ public sealed partial class TerminalComponent : Component
     [DataField(), ViewVariables(VVAccess.ReadWrite)]
     public ProtoId<SourcePortPrototype> OutPort = "TerminalOut";
 
-    /// <summary>The server-side Lua program being run on this terminal.</summary>
-    [NonSerialized]
-    public SharedTerminalProgram? Program;
+    /// <summary>Visual and proper state of this terminal.</summary>
+    public TerminalState State = TerminalState.Off;
 }
 
 [Serializable, NetSerializable]
@@ -38,3 +37,9 @@ public sealed class TerminalFileMessage : EntityEventArgs
         Content = content;
     }
 }
+
+[Serializable, NetSerializable]
+public enum TerminalVisuals : byte { Light }
+
+[Serializable, NetSerializable]
+public enum TerminalState : byte { Working, Yielding, Stopped, Off }

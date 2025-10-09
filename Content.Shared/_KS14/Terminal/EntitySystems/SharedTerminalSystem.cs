@@ -7,6 +7,7 @@ namespace Content.Shared.KS14.Terminal;
 public abstract class SharedTerminalSystem : EntitySystem
 {
     [Dependency] protected readonly SharedDeviceLinkSystem LinkSystem = default!;
+    [Dependency] protected readonly SharedAppearanceSystem AppearanceSystem = default!;
 
     public const int MaxTerminalFileSize = 10000;
 

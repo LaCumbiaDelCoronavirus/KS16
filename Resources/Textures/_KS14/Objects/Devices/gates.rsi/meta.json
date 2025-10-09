@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "license": "CC-BY-SA-3.0",
+  "copyright": "Originally created by Kevin Zheng, 2022, as 'or.png' in 'gates.rsi'. Modified by LaCumbiaDelCoronavirus (github).",
+  "size": {
+    "x": 32,
+    "y": 32
+  },
+  "states": [
+    {
+        "name": "lua"
+    },
+    {
+        "name": "light_base"
+    },
+    {
+        "name": "off"
+    },
+    {
+        "name": "green_unlit"
+    },
+    {
+        "name": "redblinking_unlit",
+        "delays": [
+            [
+                0.25,
+                0.25,
+                0.25,
+                0.25
+            ]
+        ]
+    },
+    {
+        "name": "yellow_unlit"
+    }
+  ]
+}
